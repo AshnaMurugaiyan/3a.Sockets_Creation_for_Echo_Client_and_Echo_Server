@@ -29,7 +29,7 @@ while True:
 c.close()
 s.close()
 ```
-server.py
+client.py
 ```
 import socket
 s=socket.socket()
