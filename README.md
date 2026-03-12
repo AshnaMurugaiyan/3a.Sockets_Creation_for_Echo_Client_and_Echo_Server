@@ -12,39 +12,46 @@ Sockets Links.
 server.py
 ```
 import socket
-s=socket.socket()
-s.bind(('localhost', 8001))
-s.listen(1)
-print("Waiting for connection...")
-c, addr=s.accept()
-print("Connected to", addr)
-while True:
-    clientMessage=c.recv(1024).decode()
-    if clientMessage=="exit":
-        print("Client disconnected")
-        break
-    print("Echo of Client >", clientMessage)
-    reply = input("Server > ")
-    c.send(reply.encode())
-c.close()
-s.close()
+
+HOST = '127.0.0.1'  
+PORT = 65432        
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+    server_socket.bind((HOST, PORT))
+    server_socket.listen()
+
+    print(f"Server is listening on {HOST}:{PORT}")
+    while True:
+        conn, addr = server_socket.accept()
+        with conn:
+            print(f"Connected by {addr}")
+            while True:
+                data = conn.recv(1024)
+                if not data:
+                    break
+                conn.sendall(data)
+                print(f"Echoed: {data.decode('utf-8')}")
 ```
 client.py
 ```
 import socket
-s=socket.socket()
-s.connect(('localhost', 8001))
-while True:
-    msg=input("Client > ")
-    s.send(msg.encode())
-    if msg=="exit":
-        print("Disconnected")
-        break
-    print("Echo of Server >", s.recv(1024).decode())
-s.close()
+
+HOST = '127.0.0.1'  
+PORT = 65432  
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+    client_socket.connect((HOST, PORT))
+
+    message = 'Hello Server'
+    client_socket.sendall(message.encode('utf-8'))
+
+    data = client_socket.recv(1024)
+    print(f"Received echo: {data.decode('utf-8')}")
 ```
 ## OUPUT
-<img width="1486" height="360" alt="CN Exp-3a" src="https://github.com/user-attachments/assets/d7039fe5-60cb-444e-baf0-0d1cb7e5bdf3" />
+<img width="1483" height="352" alt="Screenshot 2026-03-12 112957" src="https://github.com/user-attachments/assets/7558d5b5-a44f-4184-9a28-b243ba74eea2" />
+
+
 
 ## RESULT
 Thus, the python program for creating Echo Client and Echo Server using TCP Sockets Links 
